@@ -11,7 +11,7 @@ package de.jt.model;
 public final class GeoConstants {
 
     /**
-     * Latitude: -90 to 90 degrees, from south to north position (-south / +north);
+     * Latitude: -90 to 90 degrees
      */
     public static final int LAT = 0;
 
@@ -21,7 +21,7 @@ public final class GeoConstants {
     public static final int MONGO_LAT = 1;
 
     /**
-     * Longitude: -180 to 180 degrees, from west to east position (-west / +east);
+     * Longitude: -180 to 180 degrees
      */
     public static final int LONG = 1;
 

@@ -19,7 +19,7 @@ import de.jt.model.GeoLocation;
 import de.jt.model.MongoConstants;
 
 /**
- * The Mongo base test to setup und tear down embedded mongo.
+ * The Mongo base test to setup and tear down embedded mongo.
  * 
  * @author Hendrik Stein
  * 
@@ -85,7 +85,7 @@ public abstract class AbstractMongoDBTest extends TestCase {
      * 
      * @return the mongo client
      */
-    public Mongo getMongo() {
+    private Mongo getMongo() {
         return mongo;
     }
 

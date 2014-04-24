@@ -23,10 +23,6 @@ public class GeoBoundingBox {
 
     /**
      * Creates an instance of a bounding box.
-     * <p>
-     * MongoDB bounding box queries need lowerLeft and upperRight
-     * <p>
-     * ElasticSearch queries need upperLeft and lowerRight
      * 
      * @param lowerLeft the lower left coordinate of the bounding box
      * @param upperRight the upper right coordinate of the bounding box
@@ -36,22 +32,22 @@ public class GeoBoundingBox {
      */
     public GeoBoundingBox(GeoPoint lowerLeft, GeoPoint upperRight) throws IllegalArgumentException {
         if (lowerLeft == null || upperRight == null) {
-            throw new IllegalArgumentException("BoundingBox: null parameter");
+            throw new IllegalArgumentException("GeoBoundingBox: null parameter");
         }
 
         // check if box is a point
         if (lowerLeft.equals(upperRight)) {
-            throw new IllegalArgumentException("BoundingBox is a single point");
+            throw new IllegalArgumentException("GeoBoundingBox is a single point");
         }
 
         // check for same latitude or longitude
         if (lowerLeft.isLatEquals(upperRight) || lowerLeft.isLonEquals(upperRight)) {
-            throw new IllegalArgumentException("BoundingBox: latitude or longitude of both points are the same");
+            throw new IllegalArgumentException("GeoBoundingBox: latitude or longitude of both points are the same");
         }
 
         // check if coordinates are all zero
         if (lowerLeft.isLatLonZero() && upperRight.isLatLonZero()) {
-            throw new IllegalArgumentException("BoundingBox: both points are 0.0");
+            throw new IllegalArgumentException("GeoBoundingBox: both points are 0.0");
         }
 
         this.lowerLeft = lowerLeft;

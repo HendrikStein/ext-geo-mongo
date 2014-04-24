@@ -1,7 +1,3 @@
-/**
- * Copyright (C) 2013 by LAT-DEVELOP GmbH & Co. KG, D 94548 Innernzell.
- * All Rights reserved - Unauthorized copying or transmission prohibited.
- */
 package de.jt.utils;
 
 import java.io.BufferedWriter;
@@ -16,7 +12,7 @@ import de.jt.model.GeoPoint;
 /**
  * Tool to generate GPX files.
  * 
- * @author torsten.van.beeck
+ * @author torsten.van.beeck (eipie)
  */
 public final class GPXUtils {
 
