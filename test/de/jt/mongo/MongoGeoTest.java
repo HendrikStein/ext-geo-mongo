@@ -23,29 +23,37 @@ import de.jt.utils.GPXUtils;
  */
 public class MongoGeoTest extends AbstractMongoDBTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        /** Insert 64800(360*180) geo locations on the earth. */
-        int locAmount = 0;
-        GeoLocation location;
-        /** Rotate south to north. */
-        for (double lat = -90d; lat <= 90d; lat++) {
-            /** Rotate east to west. */
-            for (double lon = -180d; lon < 180; lon++) {
-                locAmount++;
-                location = new GeoLocation(new GeoPoint(lat, lon), "Number: " + locAmount);
-                getGeoLocationCol().insert(location.toMongo(), WriteConcern.SAFE);
-            }
+    /**
+     * Insert a list of {@link GeoLocation} to the database.
+     * 
+     * @param locations the locations
+     */
+    private void insertLocations(List<GeoLocation> locations) {
+        for (GeoLocation location : locations) {
+            getGeoLocationCol().insert(location.toMongo(), WriteConcern.SAFE);
         }
     }
 
+    /**
+     * Insert certain {@link GeoLocation}
+     */
+    private void insertCertainGeoLocations() {
+        getGeoLocationCol().insert(SampleGeoLocations.locationAleutianIslands.toMongo(), WriteConcern.SAFE);
+        getGeoLocationCol().insert(SampleGeoLocations.locationHiroshima.toMongo(), WriteConcern.SAFE);
+        getGeoLocationCol().insert(SampleGeoLocations.locationLosAngeles.toMongo(), WriteConcern.SAFE);
+        getGeoLocationCol().insert(SampleGeoLocations.locationThailand.toMongo(), WriteConcern.SAFE);
+        getGeoLocationCol().insert(SampleGeoLocations.locationBerlin.toMongo(), WriteConcern.SAFE);
+        getGeoLocationCol().insert(SampleGeoLocations.locationCologne.toMongo(), WriteConcern.SAFE);
+        getGeoLocationCol().insert(SampleGeoLocations.locationFrankfurt.toMongo(), WriteConcern.SAFE);
+    }
+
     @Test
-    public void testBoundingBoxRotateAroundPrimeMeridian() {
+    public void testBoundingBoxRotateWholeWorldAroundPrimeMeridian() {
+        // Insert testdata
+        insertLocations(SampleGeoLocations.getWholeWorld());
         // Neglect the earths curve
         double latBBoxDiameter = 10d;
-        double lonBBoxDiameter = 10d;
+        double lonBBoxDiameter = 20d;
 
         Map<Integer, QueryResult> resultMap = new HashMap<>();
         /** Shift lower left latitude coordinate by 0.5 degrees. Start South. */
@@ -98,4 +106,39 @@ public class MongoGeoTest extends AbstractMongoDBTest {
         Assert.fail("Needs to be implemented");
     }
 
+    @Test
+    public void testBoundingBox() {
+        insertCertainGeoLocations();
+        GeoPoint lowerLeft = new GeoPoint(49.74733, 6.63575);// Trier
+        GeoPoint upperRight = new GeoPoint(51.53075, 9.07471);// Warburg
+        GeoBoundingBox bbox = new GeoBoundingBox(lowerLeft, upperRight);
+
+        // Print Bounding box as gpx output to plot it for example at http://gpso.de/maps/
+        System.out.println(GPXUtils.bboxToTrack(bbox));
+
+        MongoGeoService geoService = new MongoGeoService(getGeoLocationCol());
+        List<GeoLocation> locationList = geoService.findLocation(bbox);
+
+        // Expected Results are Cologne and Frankfurt
+        Assert.assertEquals(2, locationList.size());
+        Assert.assertTrue(locationList.contains(SampleGeoLocations.locationFrankfurt));
+        Assert.assertTrue(locationList.contains(SampleGeoLocations.locationCologne));
+    }
+
+    @Test
+    public void testBoundingBoxOverAntimeridian() {
+        insertCertainGeoLocations();
+        GeoPoint lowerLeft = new GeoPoint(16.67304, 121.11328);// Philippines
+        GeoPoint upperRight = new GeoPoint(65.08833, -152.40234);// Alaska
+        GeoBoundingBox bbox = new GeoBoundingBox(lowerLeft, upperRight);
+
+        // Print Bounding box as gpx output to plot it for example at http://gpso.de/maps/
+        System.out.println(GPXUtils.bboxToTrack(bbox));
+
+        MongoGeoService geoService = new MongoGeoService(getGeoLocationCol());
+        List<GeoLocation> locationList = geoService.findLocation(bbox);
+        Assert.assertEquals(2, locationList.size());
+        Assert.assertTrue(locationList.contains(SampleGeoLocations.locationAleutianIslands));
+        Assert.assertTrue(locationList.contains(SampleGeoLocations.locationHiroshima));
+    }
 }
