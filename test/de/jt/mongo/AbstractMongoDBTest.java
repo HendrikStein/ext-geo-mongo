@@ -15,8 +15,8 @@ import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
+import de.jt.db.MongoConstants;
 import de.jt.model.GeoLocation;
-import de.jt.model.MongoConstants;
 
 /**
  * The Mongo base test to setup and tear down embedded mongo.

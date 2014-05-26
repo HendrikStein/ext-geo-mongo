@@ -140,13 +140,13 @@ public final class SampleGeoLocations {
     }
 
     /**
-     * Get a list of {@link GeoLocation} for the whole world. 64800(360*180)
+     * Get a list of {@link GeoLocation} for the whole world. Add 64800(360*180) geo locations.
      * 
      * @return a list of geo locations
      */
     public static List<GeoLocation> getWholeWorld() {
-        GeoPoint lowerLeft = new GeoPoint(-89.9999, -179.9999);
-        GeoPoint upperRight = new GeoPoint(89.9999, 179.9999);
+        GeoPoint lowerLeft = new GeoPoint(-90d, -180d);
+        GeoPoint upperRight = new GeoPoint(90d, 180d);
         return getSampleForBoundingBox(new GeoBoundingBox(lowerLeft, upperRight));
     }
 

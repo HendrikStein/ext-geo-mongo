@@ -300,7 +300,7 @@ public class MongoQueryBuilder {
     /**
      * Equivalent to a $geoWithin($geometry) operand, based on a bounding polygon represented by an {@link BoundingBox}.
      * 
-     * NOTE Any geometry specified with GeoJSON to $geoWithin queries, must fit within a single hemisphere. MongoDB
+     * NOTE Any geometry specified with GeoJSON to $geoWithin queries, must fit within the half of a single hemisphere. MongoDB
      * interprets geometries larger than half of the sphere as queries for the smaller of the complementary geometries.
      * 
      * @param bbox the bounding box

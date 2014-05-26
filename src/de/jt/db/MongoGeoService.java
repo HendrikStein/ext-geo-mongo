@@ -12,7 +12,7 @@ import de.jt.model.GeoBoundingBox;
 import de.jt.model.GeoLocation;
 
 /**
- * Database service for geo queries.
+ * Mongo database service for geo queries.
  * 
  * @author Hendrik Stein
  * 
@@ -37,18 +37,37 @@ public class MongoGeoService {
      * @param bbox the bounding box
      * @return the list of geo locations
      */
-    public List<GeoLocation> findLocation(GeoBoundingBox bbox) {
-        MongoQueryBuilder qb = new MongoQueryBuilder();
-
-        if (bbox.fitWithinSphere()) {
-            qb.put(GeoLocation.MONGO_GEOPOINT).geoWithinRingPolygon(bbox);
+    public List<GeoLocation> getLocations(GeoBoundingBox bbox) {
+        List<GeoLocation> resultGeoList = new ArrayList<>();
+        if (bbox.isOverAntimeridian() && !bbox.fitWithinHalfSphere()) {
+            List<GeoBoundingBox> boxes = bbox.splitByAntimeridian();
+            resultGeoList.addAll(findByBBox(boxes.get(0)));
+            resultGeoList.addAll(findByBBox(boxes.get(1)));
         } else {
-            qb.put(GeoLocation.MONGO_GEOPOINT).geoWithinBox(bbox);
+            resultGeoList = findByBBox(bbox);
+        }
+
+        return resultGeoList;
+    }
+
+    /**
+     * Find geographical locations for a bounding box.
+     * 
+     * @param bbox the {@link GeoBoundingBox}
+     * @return the list of {@link GeoLocation}
+     */
+    private List<GeoLocation> findByBBox(GeoBoundingBox bbox) {
+        MongoQueryBuilder builder = new MongoQueryBuilder();
+
+        if (bbox.fitWithinHalfSphere()) {
+            builder.put(GeoLocation.MONGO_GEOPOINT).geoWithinRingPolygon(bbox);
+        } else {
+            builder.put(GeoLocation.MONGO_GEOPOINT).geoWithinBox(bbox);
         }
 
         DBCursor cursor = null;
         try {
-            cursor = dbCol.find(qb.build());
+            cursor = dbCol.find(builder.build());
             List<GeoLocation> locationList = new ArrayList<>();
 
             while (cursor.hasNext()) {
@@ -63,5 +82,5 @@ public class MongoGeoService {
             }
         }
     }
-    
+
 }
