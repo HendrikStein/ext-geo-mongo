@@ -1,4 +1,4 @@
-package de.jt.model;
+package de.jt.db;
 
 /**
  * MongoDB constants.
