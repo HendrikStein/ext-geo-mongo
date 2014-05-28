@@ -12,7 +12,7 @@ import de.jt.model.GeoPoint;
 /**
  * Tool to generate GPX files.
  * 
- * @author torsten.van.beeck (eipie)
+ * @author torsten.van.beeck (https://github.com/feueraustreter)
  */
 public final class GPXUtils {
 
