@@ -155,18 +155,19 @@ public class GeoBoundingBox {
         // The longitude break even point to switch the other way round
         final double lonBreakEven = 180d;
 
-        double latDiff = calculateDiff(lowerLeft.getLatitude(), upperLeft.getLatitude());
+        double latDistance = calculateDistance(lowerLeft.getLatitude(), upperLeft.getLatitude());
+        double lonDistance = calculateDistance(lowerLeft.getLongitude(), lowerRight.getLongitude());
 
-        double lonDiff = calculateDiff(lowerLeft.getLongitude(), lowerRight.getLongitude());
         if (isOverAntimeridian()) {
-            lonDiff = lonBreakEven - (Math.abs(lowerLeft.getLongitude()));
-            lonDiff += lonBreakEven - (Math.abs(lowerRight.getLongitude()));
+            // When the bounding box is over the antimeridian the longitude distance is calculate as follows:
+            lonDistance = lonBreakEven - lowerLeft.getLongitude();
+            lonDistance += lonBreakEven - (Math.abs(lowerRight.getLongitude()));
         }
 
         // Check if lat/lon difference fits into half sphere
-        if ((latDiff < maxLatEastWestHalfSphereDiff) && (lonDiff < maxLonEastWestHalfSphereDiff)) {
+        if ((latDistance < maxLatEastWestHalfSphereDiff) && (lonDistance < maxLonEastWestHalfSphereDiff)) {
             return true;
-        } else if ((latDiff < maxLatNorthSouthHalfSphereDiff) && (lonDiff < maxLonNorthSouthHalfSphereDiff)) {
+        } else if ((latDistance < maxLatNorthSouthHalfSphereDiff) && (lonDistance < maxLonNorthSouthHalfSphereDiff)) {
             return true;
         } else {
             return false;
@@ -174,13 +175,13 @@ public class GeoBoundingBox {
     }
 
     /**
-     * Returns the difference value of two doubles.
+     * Returns the distance value of two doubles.
      * 
      * @param x the first double
      * @param y the second double
      * @return the difference
      */
-    private double calculateDiff(double x, double y) {
+    private double calculateDistance(double x, double y) {
         if (Math.max(x, y) == x) {
             return x - y;
         } else {

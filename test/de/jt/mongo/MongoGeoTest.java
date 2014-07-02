@@ -83,6 +83,24 @@ public class MongoGeoTest extends AbstractMongoDBTest {
     }
 
     @Test
+    public void testBigBoundingBoxOverAntimeridianWholeWorld() {
+        int locationCount = 0;
+        List<GeoLocation> europeList = SampleGeoLocations.getSampleForEurope();
+        insertLocations(europeList); // This list is expected in the result set
+        locationCount += europeList.size();
+
+        GeoPoint lowerLeft = new GeoPoint(-11.934032443281728, -151.22068533750007);
+        GeoPoint upperRight = new GeoPoint(75.65532357557852, -173.72068533750007);
+        GeoBoundingBox bbox = new GeoBoundingBox(lowerLeft, upperRight);
+
+        MongoGeoService geoService = new MongoGeoService(getGeoLocationCol());
+        List<GeoLocation> locationList = geoService.getLocations(bbox);
+
+        Assert.assertEquals(locationCount, locationList.size());
+        Assert.assertTrue(locationList.containsAll(SampleGeoLocations.getSampleForEurope()));
+    }
+
+    @Test
     public void testBigBoundingBoxOverAntimeridian() {
         List<GeoLocation> europeList = SampleGeoLocations.getSampleForEurope();
         insertLocations(europeList); // This list is not expected in the result set
