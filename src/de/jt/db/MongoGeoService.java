@@ -39,7 +39,7 @@ public class MongoGeoService {
      */
     public List<GeoLocation> getLocations(GeoBoundingBox bbox) {
         List<GeoLocation> resultGeoList = new ArrayList<>();
-        if (bbox.isOverAntimeridian() && !bbox.fitWithinHalfSphere()) {
+        if (bbox.isOverAntimeridian()) {
             List<GeoBoundingBox> boxes = bbox.splitByAntimeridian();
             resultGeoList.addAll(findByBBox(boxes.get(0)));
             resultGeoList.addAll(findByBBox(boxes.get(1)));
@@ -58,12 +58,7 @@ public class MongoGeoService {
      */
     private List<GeoLocation> findByBBox(GeoBoundingBox bbox) {
         MongoQueryBuilder builder = new MongoQueryBuilder();
-
-        if (bbox.fitWithinHalfSphere()) {
-            builder.put(GeoLocation.MONGO_GEOPOINT).geoWithinRingPolygon(bbox);
-        } else {
-            builder.put(GeoLocation.MONGO_GEOPOINT).geoWithinBox(bbox);
-        }
+        builder.put(GeoLocation.MONGO_GEOPOINT).geoWithinBox(bbox);
 
         DBCursor cursor = null;
         try {

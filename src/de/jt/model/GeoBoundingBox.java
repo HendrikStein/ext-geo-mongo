@@ -132,64 +132,6 @@ public class GeoBoundingBox {
     }
 
     /**
-     * Any geometry specified with GeoJSON to $geoWithin queries, must fit within a single hemisphere. MongoDB
-     * interprets geometries larger than half of the sphere as queries for the smaller of the complementary geometries.
-     * 
-     * @return <code>true</code> if fits within sphere else <code>false</code>
-     */
-    public boolean fitWithinHalfSphere() {
-        // The max latitude/longitude difference for the eastern/western hemisphere that mongo can handle for geoWithin
-        // queries.
-        // The max latitude possible for this hemisphere are 180 degrees. (180/2)
-        double maxLatEastWestHalfSphereDiff = 90d;
-        // The max longitude possible for this hemisphere are 180 degrees. (180/2)
-        double maxLonEastWestHalfSphereDiff = 90d;
-
-        // The max latitude/longitude difference for the northern/southern hemisphere that mongo can handle for
-        // geoWithin queries.
-        // The max latitude possible for this hemisphere are 360 degrees.(360/2)
-        final double maxLatNorthSouthHalfSphereDiff = 180d;
-        // The max longitude possible for this hemisphere are 90 degrees. (90/2)
-        final double maxLonNorthSouthHalfSphereDiff = 45d;
-
-        // The longitude break even point to switch the other way round
-        final double lonBreakEven = 180d;
-
-        double latDistance = calculateDistance(lowerLeft.getLatitude(), upperLeft.getLatitude());
-        double lonDistance = calculateDistance(lowerLeft.getLongitude(), lowerRight.getLongitude());
-
-        if (isOverAntimeridian()) {
-            // When the bounding box is over the antimeridian the longitude distance is calculate as follows:
-            lonDistance = lonBreakEven - lowerLeft.getLongitude();
-            lonDistance += lonBreakEven - (Math.abs(lowerRight.getLongitude()));
-        }
-
-        // Check if lat/lon difference fits into half sphere
-        if ((latDistance < maxLatEastWestHalfSphereDiff) && (lonDistance < maxLonEastWestHalfSphereDiff)) {
-            return true;
-        } else if ((latDistance < maxLatNorthSouthHalfSphereDiff) && (lonDistance < maxLonNorthSouthHalfSphereDiff)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Returns the distance value of two doubles.
-     * 
-     * @param x the first double
-     * @param y the second double
-     * @return the difference
-     */
-    private double calculateDistance(double x, double y) {
-        if (Math.max(x, y) == x) {
-            return x - y;
-        } else {
-            return y - x;
-        }
-    }
-
-    /**
      * Returns the polygon representation of the bounding box as a ring.
      * 
      * @return the list of geo points
